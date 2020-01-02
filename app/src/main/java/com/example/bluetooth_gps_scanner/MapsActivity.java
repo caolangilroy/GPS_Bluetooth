@@ -2,29 +2,17 @@ package com.example.bluetooth_gps_scanner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.widget.Toast;
+import android.util.Log;
 
-import com.example.bluetooth_gps_scanner.LocationData;
-import com.example.bluetooth_gps_scanner.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -32,15 +20,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
     private final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
-    //private FirebaseDatabase database = ((BluetoothGPSApplication)getApplicationContext()).getDatabase();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference myRef = database.getReference("locations");
+    private DatabaseReference locationsRef = database.getReference("locations");
+    private DatabaseReference deviceRef = database.getReference("devices");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +51,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        myRef.addChildEventListener(childEventListener);
+        locationsRef.addChildEventListener(locationsChildEventListener);
 
+        /*
+        If the activity opened from DeviceListActivty
+        zoom to the selected device
+         */
+        Intent intent = getIntent();
+        if(intent.getDoubleArrayExtra("Co-Ords") != null)
+        {
+            Log.i(TAG, "CALL ME");
+            double co_ords[] = intent.getDoubleArrayExtra("Co-Ords");
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(co_ords[0], co_ords[1]));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(co_ords[0], co_ords[1])));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(co_ords[0], co_ords[1]), 15f));
+        }
     }
 
+    private ChildEventListener devicesChildEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
+        {
 
+        }
 
-    private ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
+    private ChildEventListener locationsChildEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
         {
