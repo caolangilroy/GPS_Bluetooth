@@ -37,62 +37,76 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+//Creating a Device List Activity class which extends AppCompatActivity
 public class DeviceListActivity extends AppCompatActivity
 {
-    private final String TAG = DeviceListActivity.class.getSimpleName();
+    private final String TAG = DeviceListActivity.class.getSimpleName();//tag created for the class.
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference("locations");
-    private ListView listView;
-    private DeviceListAdapter deviceListAdapter;
+    private ListView listView;//creates a listview variable.
+    private DeviceListAdapter deviceListAdapter;//creates a device list adaptor.
 
+    //an onCreate method is created
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.device_list_view);
-        listView = findViewById(R.id.deviceListView);
-        deviceListAdapter = new DeviceListAdapter(this, 0);
-        listView.setAdapter(deviceListAdapter);
+        super.onCreate(savedInstanceState);//calls this method from the parent class
+        setContentView(R.layout.device_list_view);//sets content view.
+        listView = findViewById(R.id.deviceListView);//sets List view (device list view)
+        deviceListAdapter = new DeviceListAdapter(this, 0);//device listener variable is set to this new object.
+        listView.setAdapter(deviceListAdapter);//this sets device listener adaptor as the adaptor within the listview object.
+
+        //this is reading for events on the screen within the listview.
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
             }
         });
+
 //        myRef.addValueEventListener(valueEventListener);
         myRef.addChildEventListener(childEventListener);
     }
 
+    //Creating a Device Listener adaptor class which is used above^, It extends an array adapter.
     public class DeviceListAdapter extends ArrayAdapter<LocationData>
     {
 
+        //Creates an Array List of type Location data and naming it Location Devices.
         private ArrayList<LocationData> locationDevices;
-        private Context context;
+        private Context context; //Creates a context object
 
+        //Creates a device list adaptor method which takes in the context set above, and an integer called resourceInt
         public DeviceListAdapter(Context context, int resourceInt) {
-            super(context, resourceInt);
+
+            super(context, resourceInt);//Calls the parent class with the same parameters
             this.context = context;
-            locationDevices = new ArrayList<>();
+            locationDevices = new ArrayList<>();//creating an empty and unconfigured arraylist(ie the type contents of the list havnt been declared yet)
         }
 
+        //adds location to location List and then notification sent.
         @Override
         public void add(LocationData location) {
             locationDevices.add(location);
             notifyDataSetChanged();
         }
 
+        //Get data method returns data at desired position.
         @Override
         public LocationData getItem(int position) {
             return locationDevices.get(position);
         }
 
+        //this method counts the number of entries in the list via .size().
         @Override
         public int getCount() {
             return locationDevices.size();
         }
 
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
+            View view = convertView;//this creates a view object
+
             if(view == null)
             {
                 LayoutInflater inflater = ((Activity)context).getLayoutInflater();
@@ -101,11 +115,12 @@ public class DeviceListActivity extends AppCompatActivity
                 view.setTag(viewHolder);
             }
 
-            LocationData device = locationDevices.get(position);
-            ViewHolder holder = (ViewHolder)view.getTag();
-            holder.deviceName.setText(device.deviceName);
+            LocationData device = locationDevices.get(position);//creating a location data object from the data in the array list at requested position
+            ViewHolder holder = (ViewHolder)view.getTag();//Creating a viewHolder object which casts the view.getTag to viewHolder type. - this is defined below.
+            holder.deviceName.setText(device.deviceName);//functions are defined below.
             holder.addressView.setText(device.deviceAddress);
             holder.deviceType.setText(""+device.deviceType);
+
             if(device.deviceType == 1)
             {
                 holder.imageView.setImageDrawable(getDrawable(R.drawable.ic_heartbeat));

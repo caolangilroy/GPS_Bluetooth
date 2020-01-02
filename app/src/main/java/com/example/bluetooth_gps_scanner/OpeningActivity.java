@@ -114,7 +114,7 @@ public class OpeningActivity extends AppCompatActivity
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean isGPS = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetwork = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        long MIN_DISTANCE_CHANGE_FOR_UPDATES = 100;// Distance in meters
+        long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1000 * 120;// Distance in meters
         long MIN_TIME_BW_UPDATES = 1000 * 600;// Update every 10 minutes
         boolean canGetLocation = true;
         int ALL_PERMISSIONS_RESULT = 101;
