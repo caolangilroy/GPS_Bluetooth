@@ -48,6 +48,7 @@ public class BluetoothService extends Service {
 
 
 
+
     /**
      * FOLLOWING LINES ARE FOR BINDING SERVICE TO
      * AN ACTIVITY
@@ -81,7 +82,7 @@ public class BluetoothService extends Service {
         public void onLocationChanged(Location location)
         {
             LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-            String key =  myRef.push().getKey();
+            String key =  locationsRef.push().getKey();
             LocationData locationData = new LocationData(latLng.latitude, latLng.longitude);
             //myRef.child(key).setValue(locationData);
             Log.i("PRP","Location Changed");
@@ -90,7 +91,8 @@ public class BluetoothService extends Service {
             scanDevices(BluetoothService.this);
             r.run();
 
-
+//I've commented this out so you can choose between your locationsRef or the myRef above
+//            locationsRef.child(key).setValue(locationData);
         }
 
 
